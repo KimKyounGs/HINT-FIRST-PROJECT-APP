@@ -289,19 +289,23 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
       });
 
       const contentType = response.headers.get('content-type') || '';
-      if (!contentType.includes('application/json')) {
+      let resData: any = null;
+
+      if (contentType.includes('application/json')) {
+        resData = await response.json();
+      } else {
         const errorText = await response.text();
-        console.error('Non-JSON response from /api/analyze:', response.status, errorText);
+        const snippet = errorText.replace(/<[^>]*>?/gm, ' ').replace(/\s+/g, ' ').trim().slice(0, 200);
+        console.error(`[Analysis Request Failed] HTTP ${response.status} Non-JSON body:`, snippet);
         throw new Error(
-          `서버(Vercel/API)에서 유효한 JSON 대신 오류 페이지(HTTP ${response.status})를 반환했습니다.\n` +
-          `Vercel 배포 환경에서 Serverless Function 생성 및 환경 변수(GEMINI_API_KEY) 설정을 확인해주세요.`
+          `서버(Vercel/API)에서 오류 페이지(HTTP ${response.status})를 반환했습니다.\n` +
+          `응답 내용: ${snippet || '(내용 없음)'}\n\n` +
+          `Vercel 대시보드 Settings -> Environment Variables에 GEMINI_API_KEY가 등록되어 있는지 확인해주세요.`
         );
       }
 
-      const resData = await response.json();
-
       if (!response.ok || resData.success === false) {
-        const errMsg = resData.error?.message || `직무 분석 요청 실패 (HTTP ${response.status})`;
+        const errMsg = resData?.error?.message || `직무 분석 요청 실패 (HTTP ${response.status})`;
         throw new Error(errMsg);
       }
 

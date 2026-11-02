@@ -1,26 +1,61 @@
 import { GoogleGenAI } from '@google/genai';
 
-export function getGeminiClient(): { ai: GoogleGenAI | null; hasApiKey: boolean } {
+/**
+ * Safely inspects the GEMINI_API_KEY environment variable without exposing secrets.
+ */
+export function getApiKeyStatus(): {
+  isValid: boolean;
+  masked: string;
+  keyLength: number;
+} {
   const apiKey = process.env.GEMINI_API_KEY;
-  if (!apiKey || apiKey === 'MY_GEMINI_API_KEY') {
-    return { ai: null, hasApiKey: false };
+  if (!apiKey || apiKey.trim() === '' || apiKey === 'MY_GEMINI_API_KEY') {
+    return { isValid: false, masked: 'NOT_CONFIGURED', keyLength: 0 };
   }
-  return {
-    ai: new GoogleGenAI({
-      apiKey,
+  const clean = apiKey.trim();
+  const masked = clean.length > 8
+    ? `${clean.slice(0, 4)}...${clean.slice(-4)}`
+    : 'CONFIGURED';
+  return { isValid: true, masked, keyLength: clean.length };
+}
+
+/**
+ * Initializes the Gemini API client safely.
+ */
+export function getGeminiClient(): {
+  ai: GoogleGenAI | null;
+  hasApiKey: boolean;
+  statusInfo: { isValid: boolean; masked: string; keyLength: number };
+} {
+  const statusInfo = getApiKeyStatus();
+  if (!statusInfo.isValid) {
+    return { ai: null, hasApiKey: false, statusInfo };
+  }
+
+  try {
+    const ai = new GoogleGenAI({
+      apiKey: process.env.GEMINI_API_KEY!.trim(),
       httpOptions: {
         headers: {
           'User-Agent': 'aistudio-build',
         },
       },
-    }),
-    hasApiKey: true,
-  };
+    });
+    return { ai, hasApiKey: true, statusInfo };
+  } catch (err: any) {
+    console.error('[Gemini Init Error]', err?.message || err);
+    return { ai: null, hasApiKey: false, statusInfo };
+  }
 }
 
-export function withTimeout<T>(promise: Promise<T>, ms: number): Promise<T> {
+/**
+ * Promise wrapper with timeout
+ */
+export function withTimeout<T>(promise: Promise<T>, ms: number, label = 'Operation'): Promise<T> {
   return new Promise((resolve, reject) => {
-    const timer = setTimeout(() => reject(new Error(`AI 요청 시간 초과 (${ms}ms)`)), ms);
+    const timer = setTimeout(() => {
+      reject(new Error(`[Timeout] ${label} exceeded ${ms}ms threshold`));
+    }, ms);
     promise
       .then((val) => {
         clearTimeout(timer);
@@ -33,8 +68,14 @@ export function withTimeout<T>(promise: Promise<T>, ms: number): Promise<T> {
   });
 }
 
+/**
+ * Parses raw job posting text into structured components
+ */
 export async function parseJobPosting(rawText: string, companyName?: string, roleTitle?: string) {
-  const { ai } = getGeminiClient();
+  const startTime = Date.now();
+  const { ai, hasApiKey, statusInfo } = getGeminiClient();
+
+  console.log(`[JobParse Start] [${new Date().toISOString()}] Input length: ${rawText?.length || 0} chars | hasApiKey: ${hasApiKey} (key: ${statusInfo.masked})`);
 
   if (ai) {
     try {
@@ -48,7 +89,7 @@ export async function parseJobPosting(rawText: string, companyName?: string, rol
 공고 원문 / URL 설명:
 ${rawText || '정보 없음'}
 
-반드시 다음 JSON 형식으로만 응답하세요:
+반드시 다음 JSON 형식으로만 응답하세요 (순수 JSON):
 {
   "company": "추출된 기업명",
   "role": "추출된 직무명 (예: 백엔드 개발자, C++ 임베디드 엔지니어 등)",
@@ -69,18 +110,26 @@ ${rawText || '정보 없음'}
             responseMimeType: 'application/json',
           },
         }),
-        10000
+        12000,
+        'Gemini parseJobPosting'
       );
 
       const text = response.text || '{}';
-      return JSON.parse(text);
-    } catch (e) {
-      console.warn('AI parse-job fallback triggered:', e);
+      const parsed = JSON.parse(text);
+      console.log(`[JobParse Success] Completed in ${Date.now() - startTime}ms via gemini-3.8-flash`);
+      return {
+        ...parsed,
+        _source: 'gemini-3.8-flash',
+      };
+    } catch (e: any) {
+      console.warn(`[JobParse Fallback] Gemini call failed (${e.message}), falling back to heuristic engine.`);
     }
+  } else {
+    console.log(`[JobParse Heuristic] GEMINI_API_KEY not configured or invalid. Using heuristic parsing.`);
   }
 
   // Fallback heuristic parser
-  return {
+  const fallback = {
     company: companyName || '입력 기업',
     role: roleTitle || '소프트웨어 엔지니어',
     experienceRequirement: '경력 무관 또는 기재 사항 참조',
@@ -93,11 +142,28 @@ ${rawText || '정보 없음'}
     mandatorySkills: ['관련 언어 숙련도', '자료구조 및 알고리즘 이해', 'Git 협업 경험'],
     preferredSkills: ['유관 프로젝트 리드 경험', '성능 튜닝 및 대규모 트래픽 처리 경험'],
     summary: `${companyName || '기업'}의 ${roleTitle || '기술 직무'} 채용 공고입니다.`,
+    _source: 'heuristic-engine',
   };
+
+  console.log(`[JobParse Success] Heuristic parser finished in ${Date.now() - startTime}ms`);
+  return fallback;
 }
 
+/**
+ * Conducts job fit analysis between user profile and job posting
+ */
 export async function analyzeJobFit(userProfile: any, jobPosting: any) {
-  const { ai, hasApiKey } = getGeminiClient();
+  const startTime = Date.now();
+  const { ai, hasApiKey, statusInfo } = getGeminiClient();
+
+  const userSkillCount = Array.isArray(userProfile?.skills) ? userProfile.skills.length : 0;
+  const userProjectCount = Array.isArray(userProfile?.projects) ? userProfile.projects.length : 0;
+  const company = jobPosting?.company || '기업';
+  const role = jobPosting?.role || '직무';
+
+  console.log(
+    `[Analyze Start] [${new Date().toISOString()}] Target: ${company} - ${role} | User skills: ${userSkillCount}, projects: ${userProjectCount} | Gemini: ${hasApiKey ? 'ENABLED (' + statusInfo.masked + ')' : 'DISABLED'}`
+  );
 
   if (ai) {
     try {
@@ -221,6 +287,7 @@ ${JSON.stringify(jobPosting, null, 2)}
 }
 `;
 
+      console.log(`[Analyze Gemini Call] Sending prompt to gemini-3.8-flash...`);
       const response = await withTimeout(
         ai.models.generateContent({
           model: 'gemini-3.8-flash',
@@ -229,39 +296,54 @@ ${JSON.stringify(jobPosting, null, 2)}
             responseMimeType: 'application/json',
           },
         }),
-        12000
+        15000,
+        'Gemini analyzeJobFit'
       );
 
       const text = response.text || '{}';
       const parsedResult = JSON.parse(text);
+      const elapsed = Date.now() - startTime;
+      console.log(`[Analyze Success] Gemini inference succeeded in ${elapsed}ms | Score: ${parsedResult.jobFitScore}`);
+
       return {
         result: parsedResult,
         source: 'gemini-3.8-flash',
         hasApiKey: true,
+        executionTimeMs: elapsed,
       };
-    } catch (aiErr) {
-      console.warn('Gemini generateContent timed out or errored, using heuristic fallback:', aiErr);
+    } catch (aiErr: any) {
+      console.warn(`[Analyze Gemini Error] Error during Gemini inference: ${aiErr?.message || aiErr}. Stack:`, aiErr?.stack);
+      console.warn(`[Analyze Fallback] Switching to deterministic realistic analysis engine.`);
     }
+  } else {
+    console.log(`[Analyze Fallback] GEMINI_API_KEY not configured. Running deterministic analysis engine.`);
   }
 
   // Fallback deterministic analysis engine
   const fallbackResult = generateRealisticAnalysis(userProfile, jobPosting);
+  const elapsed = Date.now() - startTime;
+  console.log(`[Analyze Fallback Complete] Heuristic engine returned analysis in ${elapsed}ms | Score: ${fallbackResult.jobFitScore}`);
+
   return {
     result: fallbackResult,
     source: hasApiKey ? 'heuristic-fallback' : 'heuristic-engine',
     hasApiKey,
+    executionTimeMs: elapsed,
   };
 }
 
+/**
+ * Deterministic, rule-based realistic analysis engine
+ */
 export function generateRealisticAnalysis(userProfile: any, jobPosting: any) {
-  const userSkills: string[] = (userProfile.skills || []).map((s: any) =>
-    typeof s === 'string' ? s.toLowerCase() : (s.name || '').toLowerCase()
+  const userSkills: string[] = (userProfile?.skills || []).map((s: any) =>
+    typeof s === 'string' ? s.toLowerCase() : (s?.name || '').toLowerCase()
   );
-  const userProjects = userProfile.projects || [];
-  const requiredSkills: string[] = (jobPosting.mandatorySkills || []).concat(
-    jobPosting.requirements || []
+  const userProjects = userProfile?.projects || [];
+  const requiredSkills: string[] = (jobPosting?.mandatorySkills || []).concat(
+    jobPosting?.requirements || []
   );
-  const preferredSkills: string[] = jobPosting.preferredSkills || [];
+  const preferredSkills: string[] = jobPosting?.preferredSkills || [];
 
   let matchedSkillsCount = 0;
   const skillsGapAnalysis: any[] = [];
@@ -321,7 +403,8 @@ export function generateRealisticAnalysis(userProfile: any, jobPosting: any) {
     }
   });
 
-  const ratio = Math.min(Math.max((matchedSkillsCount / Math.max(requiredSkills.length, 1)) * 100, 45), 95);
+  const baseRatio = requiredSkills.length > 0 ? (matchedSkillsCount / requiredSkills.length) * 100 : 75;
+  const ratio = Math.min(Math.max(baseRatio, 48), 94);
   const jobFitScore = Math.round(ratio);
 
   let competitivenessLevel = '중상 (경쟁력 있음)';
@@ -330,7 +413,7 @@ export function generateRealisticAnalysis(userProfile: any, jobPosting: any) {
 
   return {
     jobFitScore,
-    scoreRationale: `${jobPosting.company || '해당 기업'}의 ${jobPosting.role || '직무'} 요구사항과 비교했을 때, 핵심 기술 스택의 약 ${Math.round(ratio)}%가 일치합니다. 특히 ${userProjects.length > 0 ? userProjects[0].title || '진행한 프로젝트' : '보유 역량'}에서 다룬 실무 경험이 긍정적으로 작용하며, 일부 필수/우대 인프라 요건을 보완할 경우 합격 가능성이 대폭 상승할 것으로 분석됩니다.`,
+    scoreRationale: `${jobPosting?.company || '해당 기업'}의 ${jobPosting?.role || '직무'} 요구사항과 비교했을 때, 핵심 기술 스택의 약 ${Math.round(ratio)}%가 일치합니다. 특히 ${userProjects.length > 0 ? userProjects[0]?.title || '진행한 프로젝트' : '보유 역량'}에서 다룬 실무 경험이 긍정적으로 작용하며, 일부 필수/우대 인프라 요건을 보완할 경우 합격 가능성이 대폭 상승할 것으로 분석됩니다.`,
     matchBreakdown: {
       techStackMatch: {
         score: jobFitScore,
@@ -403,7 +486,7 @@ export function generateRealisticAnalysis(userProfile: any, jobPosting: any) {
       {
         title: '기업의 도메인 특화 비즈니스 고민 답변 준비',
         description:
-          `${jobPosting.company || '해당 기업'}의 현재 서비스 현황과 최근 기술 블로그를 분석하여 본인의 기술이 어떻게 기여할 수 있는지 1분 스피치 준비.`,
+          `${jobPosting?.company || '해당 기업'}의 현재 서비스 현황과 최근 기술 블로그를 분석하여 본인의 기술이 어떻게 기여할 수 있는지 1분 스피치 준비.`,
         priority: 'MEDIUM',
         actionItem: '기업 기술 블로그 및 최신 보도자료 분석 후 면접 예상 질문 3개 답변 스크립트 작성',
       },

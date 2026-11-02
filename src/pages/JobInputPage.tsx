@@ -58,11 +58,15 @@ export const JobInputPage: React.FC = () => {
       });
 
       const contentType = res.headers.get('content-type') || '';
-      if (!contentType.includes('application/json')) {
-        throw new Error(`서버에서 유효한 JSON을 반환하지 않았습니다. (HTTP ${res.status})`);
+      let resJson: any = null;
+      if (contentType.includes('application/json')) {
+        resJson = await res.json();
+      } else {
+        const errorText = await res.text();
+        const snippet = errorText.replace(/<[^>]*>?/gm, ' ').replace(/\s+/g, ' ').trim().slice(0, 180);
+        throw new Error(`서버에서 오류(HTTP ${res.status})를 반환했습니다: ${snippet || 'Non-JSON response'}`);
       }
 
-      const resJson = await res.json();
       if (!res.ok || resJson.success === false) {
         throw new Error(resJson.error?.message || `공고 추출 실패 (HTTP ${res.status})`);
       }

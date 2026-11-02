@@ -3,9 +3,9 @@ import { createServer as createViteServer } from 'vite';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import dotenv from 'dotenv';
-import healthHandler from './api/health';
-import analyzeHandler from './api/analyze';
-import parseJobHandler from './api/parse-job';
+import healthHandler from './api/health.ts';
+import analyzeHandler from './api/analyze.ts';
+import parseJobHandler from './api/parse-job.ts';
 
 dotenv.config();
 
