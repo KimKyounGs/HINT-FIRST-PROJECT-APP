@@ -156,11 +156,20 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   // Check backend health and API key on mount
   useEffect(() => {
     fetch('/api/health')
-      .then((res) => res.json())
-      .then((data) => {
-        setHasApiKey(Boolean(data.hasApiKey));
+      .then(async (res) => {
+        const contentType = res.headers.get('content-type') || '';
+        if (contentType.includes('application/json')) {
+          const data = await res.json();
+          setHasApiKey(Boolean(data.hasApiKey));
+        } else {
+          console.warn('Backend /api/health returned non-JSON response (status: ' + res.status + ')');
+          setHasApiKey(false);
+        }
       })
-      .catch((e) => console.log('Backend health check error:', e));
+      .catch((e) => {
+        console.warn('Backend health check error:', e);
+        setHasApiKey(false);
+      });
   }, []);
 
   const setProfile = (newProfile: UserProfile) => {
@@ -279,12 +288,24 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         }),
       });
 
-      if (!response.ok) {
-        throw new Error(`분석 요청 실패 (${response.status})`);
+      const contentType = response.headers.get('content-type') || '';
+      if (!contentType.includes('application/json')) {
+        const errorText = await response.text();
+        console.error('Non-JSON response from /api/analyze:', response.status, errorText);
+        throw new Error(
+          `서버(Vercel/API)에서 유효한 JSON 대신 오류 페이지(HTTP ${response.status})를 반환했습니다.\n` +
+          `Vercel 배포 환경에서 Serverless Function 생성 및 환경 변수(GEMINI_API_KEY) 설정을 확인해주세요.`
+        );
       }
 
       const resData = await response.json();
-      const rawData = resData.data;
+
+      if (!response.ok || resData.success === false) {
+        const errMsg = resData.error?.message || `직무 분석 요청 실패 (HTTP ${response.status})`;
+        throw new Error(errMsg);
+      }
+
+      const rawData = resData.data || resData;
 
       // Ensure minimal animation time for realistic experience (at least ~4.5s)
       await new Promise((resolve) => setTimeout(resolve, 4500));
@@ -313,7 +334,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
       return finalResult;
     } catch (err: any) {
       console.error('Analysis error in context:', err);
-      alert('분석 중 오류가 발생했습니다: ' + (err.message || '다시 시도해주세요.'));
+      alert('직무 적합도 분석 중 오류가 발생했습니다:\n' + (err.message || '다시 시도해주세요.'));
       setActivePage('job-input');
       return null;
     } finally {

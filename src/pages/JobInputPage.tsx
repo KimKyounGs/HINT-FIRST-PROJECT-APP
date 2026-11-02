@@ -56,8 +56,19 @@ export const JobInputPage: React.FC = () => {
           roleTitle: formJob.role,
         }),
       });
-      if (!res.ok) throw new Error('추출 실패');
-      const data = await res.json();
+
+      const contentType = res.headers.get('content-type') || '';
+      if (!contentType.includes('application/json')) {
+        throw new Error(`서버에서 유효한 JSON을 반환하지 않았습니다. (HTTP ${res.status})`);
+      }
+
+      const resJson = await res.json();
+      if (!res.ok || resJson.success === false) {
+        throw new Error(resJson.error?.message || `공고 추출 실패 (HTTP ${res.status})`);
+      }
+
+      const data = resJson.data || resJson;
+
       setFormJob((prev) => ({
         ...prev,
         company: data.company || prev.company,
