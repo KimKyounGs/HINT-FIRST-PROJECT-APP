@@ -21,8 +21,8 @@ export const ScoreGauge: React.FC<ScoreGaugeProps> = ({
   const [animatedScore, setAnimatedScore] = useState(0);
 
   useEffect(() => {
-    const duration = 1200;
-    const steps = 40;
+    const duration = 1000;
+    const steps = 30;
     const stepTime = duration / steps;
     let currentStep = 0;
 
@@ -48,42 +48,42 @@ export const ScoreGauge: React.FC<ScoreGaugeProps> = ({
   const arcLength = (arcDegree / 360) * circumference;
   const strokeDashoffset = arcLength - (animatedScore / 100) * arcLength;
 
-  // Grade and color determination
-  let colorFrom = '#6366f1';
+  // Grade and color determination with high WCAG contrast
+  let colorFrom = '#4f46e5';
   let colorTo = '#3b82f6';
   let gradeText = '경쟁력 양호';
   let gradeBg = isDark
-    ? 'bg-blue-500/10 text-blue-400 border-blue-500/30'
-    : 'bg-blue-50 text-blue-700 border-blue-200';
+    ? 'bg-blue-950/70 text-blue-200 border-blue-800'
+    : 'bg-blue-50 text-blue-800 border-blue-200';
 
   if (score >= 85) {
-    colorFrom = '#10b981';
-    colorTo = '#06b6d4';
+    colorFrom = '#059669';
+    colorTo = '#0d9488';
     gradeText = '합격 유력권';
     gradeBg = isDark
-      ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/30'
-      : 'bg-emerald-50 text-emerald-700 border-emerald-200';
+      ? 'bg-emerald-950/70 text-emerald-200 border-emerald-800'
+      : 'bg-emerald-50 text-emerald-800 border-emerald-200';
   } else if (score >= 70) {
-    colorFrom = '#4f46e5';
-    colorTo = '#7c3aed';
+    colorFrom = '#4338ca';
+    colorTo = '#6366f1';
     gradeText = '경쟁력 우수';
     gradeBg = isDark
-      ? 'bg-indigo-500/10 text-indigo-400 border-indigo-500/30'
-      : 'bg-indigo-50 text-indigo-700 border-indigo-200';
+      ? 'bg-indigo-950/70 text-indigo-200 border-indigo-800'
+      : 'bg-indigo-50 text-indigo-800 border-indigo-200';
   } else if (score >= 55) {
-    colorFrom = '#f59e0b';
-    colorTo = '#ec4899';
+    colorFrom = '#d97706';
+    colorTo = '#f59e0b';
     gradeText = '보완 권장';
     gradeBg = isDark
-      ? 'bg-amber-500/10 text-amber-400 border-amber-500/30'
-      : 'bg-amber-50 text-amber-700 border-amber-200';
+      ? 'bg-amber-950/70 text-amber-200 border-amber-800'
+      : 'bg-amber-50 text-amber-800 border-amber-200';
   } else {
-    colorFrom = '#ef4444';
-    colorTo = '#f97316';
+    colorFrom = '#dc2626';
+    colorTo = '#ef4444';
     gradeText = '집중 보완 필요';
     gradeBg = isDark
-      ? 'bg-red-500/10 text-red-400 border-red-500/30'
-      : 'bg-red-50 text-red-700 border-red-200';
+      ? 'bg-rose-950/70 text-rose-200 border-rose-800'
+      : 'bg-rose-50 text-rose-800 border-rose-200';
   }
 
   const rotationOffset = 140;
@@ -98,7 +98,7 @@ export const ScoreGauge: React.FC<ScoreGaugeProps> = ({
               <stop offset="100%" stopColor={colorTo} />
             </linearGradient>
             <filter id="glow" x="-20%" y="-20%" width="140%" height="140%">
-              <feDropShadow dx="0" dy="0" stdDeviation="3" floodColor={colorTo} floodOpacity="0.3" />
+              <feDropShadow dx="0" dy="0" stdDeviation="3" floodColor={colorTo} floodOpacity="0.25" />
             </filter>
           </defs>
 
@@ -109,7 +109,7 @@ export const ScoreGauge: React.FC<ScoreGaugeProps> = ({
             r={radius}
             fill="transparent"
             stroke="currentColor"
-            className={isDark ? 'text-slate-800/80' : 'text-slate-200'}
+            className={isDark ? 'text-slate-800' : 'text-slate-200'}
             strokeWidth={strokeWidth}
             strokeDasharray={`${arcLength} ${circumference}`}
             strokeDashoffset={0}
@@ -138,23 +138,23 @@ export const ScoreGauge: React.FC<ScoreGaugeProps> = ({
         <div className="absolute inset-0 flex flex-col items-center justify-center text-center">
           <div className="flex items-baseline justify-center">
             <span
-              className={`text-4xl md:text-5xl font-black tracking-tight font-mono ${
+              className={`text-5xl font-black tracking-tight font-mono ${
                 isDark ? 'text-white' : 'text-slate-900'
               }`}
             >
               {animatedScore}
             </span>
             <span
-              className={`text-sm md:text-base font-semibold ml-1 ${
-                isDark ? 'text-slate-400' : 'text-slate-400'
+              className={`text-sm font-bold ml-1 ${
+                isDark ? 'text-slate-400' : 'text-slate-500'
               }`}
             >
               / 100
             </span>
           </div>
           <span
-            className={`text-xs mt-0.5 tracking-wider font-semibold ${
-              isDark ? 'text-slate-400' : 'text-slate-500'
+            className={`text-xs mt-1 font-semibold tracking-tight ${
+              isDark ? 'text-slate-400' : 'text-slate-600'
             }`}
           >
             {sublabel}
@@ -163,7 +163,7 @@ export const ScoreGauge: React.FC<ScoreGaugeProps> = ({
       </div>
 
       {showGrade && (
-        <div className={`mt-2 px-3 py-1 rounded-full text-xs font-bold border shadow-xs ${gradeBg}`}>
+        <div className={`mt-2 px-3.5 py-1 rounded-full text-xs font-bold border tracking-tight ${gradeBg}`}>
           {gradeText}
         </div>
       )}

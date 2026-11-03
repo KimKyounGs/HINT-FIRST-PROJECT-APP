@@ -170,40 +170,42 @@ export const ProfileEditPage: React.FC = () => {
   };
 
   const inputClass = isDark
-    ? 'w-full px-3.5 py-2.5 rounded-xl bg-slate-950 border border-slate-800 text-sm text-white placeholder-slate-600 focus:outline-none focus:border-indigo-500'
-    : 'w-full px-3.5 py-2.5 rounded-xl bg-white border border-slate-200 text-sm text-slate-900 placeholder-slate-400 focus:outline-none focus:border-indigo-500 shadow-2xs';
+    ? 'w-full px-3.5 py-2.5 rounded-xl bg-slate-900 border border-slate-800 text-sm sm:text-base text-white placeholder-slate-500 focus:outline-none focus:border-indigo-500 transition-colors'
+    : 'w-full px-3.5 py-2.5 rounded-xl bg-white border border-slate-300 text-sm sm:text-base text-slate-950 placeholder-slate-400 focus:outline-none focus:border-indigo-600 shadow-2xs transition-colors';
 
-  const sectionClass = `p-6 rounded-3xl border transition-all ${
-    isDark ? 'border-slate-800 bg-slate-900/50' : 'border-slate-200 bg-white shadow-xs'
+  const sectionClass = `p-6 sm:p-7 rounded-2xl border transition-all ${
+    isDark ? 'border-slate-800 bg-slate-900/70' : 'border-slate-200 bg-white shadow-xs'
   }`;
 
   return (
-    <div className="space-y-8 py-6 max-w-5xl mx-auto">
+    <div className="space-y-8 py-4 max-w-5xl mx-auto">
       {/* Header & Actions */}
       <div
         className={`flex flex-col md:flex-row md:items-center justify-between gap-4 border-b pb-6 ${
           isDark ? 'border-slate-800' : 'border-slate-200'
         }`}
       >
-        <div>
-          <div
-            className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold border mb-2 ${
-              isDark
-                ? 'bg-indigo-500/10 text-indigo-400 border-indigo-500/20'
-                : 'bg-indigo-50 text-indigo-700 border-indigo-200'
-            }`}
-          >
-            <User className="w-3.5 h-3.5" />
-            <span>내 스펙 관리 & 역량 프로필</span>
+        <div className="space-y-1">
+          <div className="flex items-center gap-2">
+            <span
+              className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-xs font-bold ${
+                isDark
+                  ? 'bg-indigo-950/80 text-indigo-300 border border-indigo-800'
+                  : 'bg-indigo-50 text-indigo-800 border border-indigo-200'
+              }`}
+            >
+              <User className="w-3.5 h-3.5" />
+              <span>내 스펙 관리 & 역량 프로필</span>
+            </span>
           </div>
           <h1
-            className={`text-2xl md:text-3xl font-black ${
-              isDark ? 'text-white' : 'text-slate-900'
+            className={`text-2xl sm:text-3xl font-extrabold tracking-tight ${
+              isDark ? 'text-white' : 'text-slate-950'
             }`}
           >
             사용자 스펙 & 이력 정보 입력
           </h1>
-          <p className={`text-xs md:text-sm mt-1 ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>
+          <p className={`text-xs sm:text-sm leading-relaxed ${isDark ? 'text-slate-300' : 'text-slate-600'}`}>
             입력된 스펙은 브라우저에 안전하게 저장되며, 다양한 채용 공고와 반복 비교 분석할 수 있습니다.
           </p>
         </div>
@@ -211,7 +213,7 @@ export const ProfileEditPage: React.FC = () => {
         <div className="flex items-center gap-2.5">
           <button
             onClick={handleSave}
-            className="px-4 py-2.5 rounded-2xl font-bold text-xs md:text-sm bg-indigo-600 hover:bg-indigo-700 text-white flex items-center gap-2 shadow-md shadow-indigo-600/20 transition-all active:scale-95"
+            className="px-4 py-2.5 rounded-xl font-bold text-xs sm:text-sm bg-indigo-600 hover:bg-indigo-700 text-white flex items-center gap-2 shadow-sm transition-all active:scale-95"
           >
             <Save className="w-4 h-4" />
             <span>스펙 저장</span>
@@ -221,7 +223,7 @@ export const ProfileEditPage: React.FC = () => {
               handleSave();
               setActivePage('job-input');
             }}
-            className="px-4 py-2.5 rounded-2xl font-bold text-xs md:text-sm bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white flex items-center gap-2 shadow-md shadow-purple-600/20 transition-all active:scale-95"
+            className="px-4 py-2.5 rounded-xl font-bold text-xs sm:text-sm bg-slate-900 dark:bg-slate-800 hover:bg-slate-800 dark:hover:bg-slate-700 text-white flex items-center gap-2 shadow-sm transition-all active:scale-95 border border-slate-700"
           >
             <span>공고 분석하기</span>
             <ArrowRight className="w-4 h-4" />
@@ -231,32 +233,32 @@ export const ProfileEditPage: React.FC = () => {
 
       {isSavedNotice && (
         <div
-          className={`p-3.5 rounded-2xl border text-xs flex items-center gap-2 transition-all ${
+          className={`p-4 rounded-xl border text-xs sm:text-sm flex items-center gap-2.5 transition-all ${
             isDark
-              ? 'bg-emerald-500/15 border-emerald-500/30 text-emerald-300'
-              : 'bg-emerald-50 border-emerald-200 text-emerald-800'
+              ? 'bg-emerald-950/80 border-emerald-800 text-emerald-200'
+              : 'bg-emerald-50 border-emerald-300 text-emerald-900'
           }`}
         >
           <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
-          <span>사용자 스펙이 성공적으로 저장되었습니다. 이제 채용 공고와 분석을 진행할 수 있습니다.</span>
+          <span>사용자 스펙이 안전하게 저장되었습니다. 이제 채용 공고 분석을 진행할 수 있습니다.</span>
         </div>
       )}
 
       {/* Preset Loader Banner */}
       <div
-        className={`p-4 rounded-3xl border flex flex-col md:flex-row items-start md:items-center justify-between gap-3 ${
+        className={`p-5 rounded-2xl border flex flex-col md:flex-row items-start md:items-center justify-between gap-3 ${
           isDark
-            ? 'border-indigo-500/30 bg-indigo-950/20'
-            : 'border-indigo-100 bg-indigo-50/60 shadow-xs'
+            ? 'border-indigo-900/60 bg-indigo-950/20'
+            : 'border-indigo-100 bg-indigo-50/70 shadow-xs'
         }`}
       >
         <div className="flex items-center gap-2.5">
           <Sparkles className="w-5 h-5 text-indigo-600 shrink-0" />
           <div>
-            <h4 className={`text-xs font-bold ${isDark ? 'text-white' : 'text-slate-900'}`}>
+            <h4 className={`text-sm font-bold ${isDark ? 'text-white' : 'text-slate-950'}`}>
               준비된 추천 샘플 스펙 불러오기
             </h4>
-            <p className={`text-[11px] ${isDark ? 'text-slate-400' : 'text-slate-600'}`}>
+            <p className={`text-xs mt-0.5 ${isDark ? 'text-slate-300' : 'text-slate-600'}`}>
               원하는 직무 분야의 샘플 데이터를 선택하면 즉시 채용 공고와의 적합도 테스트가 가능합니다.
             </p>
           </div>
@@ -267,10 +269,10 @@ export const ProfileEditPage: React.FC = () => {
             <button
               key={sample.id}
               onClick={() => handleLoadPreset(sample.id)}
-              className={`px-3 py-1.5 rounded-xl text-xs font-semibold border transition-all ${
+              className={`px-3 py-1.5 rounded-lg text-xs font-semibold border transition-all ${
                 isDark
-                  ? 'bg-slate-800 hover:bg-indigo-600/40 text-slate-200 hover:text-white border-slate-700'
-                  : 'bg-white hover:bg-indigo-50 text-slate-700 hover:text-indigo-700 border-slate-200 shadow-2xs'
+                  ? 'bg-slate-800 hover:bg-slate-700 text-slate-200 border-slate-700'
+                  : 'bg-white hover:bg-slate-50 text-slate-800 border-slate-300 shadow-2xs'
               }`}
             >
               {sample.name} ({sample.targetJob.split('/')[0].trim()})
@@ -285,7 +287,7 @@ export const ProfileEditPage: React.FC = () => {
         <section className={sectionClass}>
           <h2
             className={`text-base font-bold flex items-center gap-2 mb-4 ${
-              isDark ? 'text-white' : 'text-slate-900'
+              isDark ? 'text-white' : 'text-slate-950'
             }`}
           >
             <User className="w-4 h-4 text-indigo-600" />
@@ -295,11 +297,11 @@ export const ProfileEditPage: React.FC = () => {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
               <label
-                className={`block text-xs font-bold mb-1.5 ${
-                  isDark ? 'text-slate-300' : 'text-slate-700'
+                className={`block text-xs sm:text-sm font-bold mb-1.5 ${
+                  isDark ? 'text-slate-200' : 'text-slate-800'
                 }`}
               >
-                이름 / 닉네임 *
+                이름 / 닉네임 <span className="text-red-500">*</span>
               </label>
               <input
                 type="text"
@@ -312,11 +314,11 @@ export const ProfileEditPage: React.FC = () => {
 
             <div>
               <label
-                className={`block text-xs font-bold mb-1.5 ${
-                  isDark ? 'text-slate-300' : 'text-slate-700'
+                className={`block text-xs sm:text-sm font-bold mb-1.5 ${
+                  isDark ? 'text-slate-200' : 'text-slate-800'
                 }`}
               >
-                목표 희망 직무 *
+                목표 희망 직무 <span className="text-red-500">*</span>
               </label>
               <input
                 type="text"
@@ -333,7 +335,7 @@ export const ProfileEditPage: React.FC = () => {
         <section className={sectionClass}>
           <h2
             className={`text-base font-bold flex items-center gap-2 mb-4 ${
-              isDark ? 'text-white' : 'text-slate-900'
+              isDark ? 'text-white' : 'text-slate-950'
             }`}
           >
             <GraduationCap className="w-4 h-4 text-indigo-600" />
@@ -343,8 +345,8 @@ export const ProfileEditPage: React.FC = () => {
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
             <div className="md:col-span-2">
               <label
-                className={`block text-xs font-bold mb-1.5 ${
-                  isDark ? 'text-slate-300' : 'text-slate-700'
+                className={`block text-xs sm:text-sm font-bold mb-1.5 ${
+                  isDark ? 'text-slate-200' : 'text-slate-800'
                 }`}
               >
                 학교명
@@ -365,8 +367,8 @@ export const ProfileEditPage: React.FC = () => {
 
             <div>
               <label
-                className={`block text-xs font-bold mb-1.5 ${
-                  isDark ? 'text-slate-300' : 'text-slate-700'
+                className={`block text-xs sm:text-sm font-bold mb-1.5 ${
+                  isDark ? 'text-slate-200' : 'text-slate-800'
                 }`}
               >
                 학위
@@ -391,8 +393,8 @@ export const ProfileEditPage: React.FC = () => {
 
             <div>
               <label
-                className={`block text-xs font-bold mb-1.5 ${
-                  isDark ? 'text-slate-300' : 'text-slate-700'
+                className={`block text-xs sm:text-sm font-bold mb-1.5 ${
+                  isDark ? 'text-slate-200' : 'text-slate-800'
                 }`}
               >
                 졸업 구분
@@ -416,8 +418,8 @@ export const ProfileEditPage: React.FC = () => {
 
             <div className="md:col-span-3">
               <label
-                className={`block text-xs font-bold mb-1.5 ${
-                  isDark ? 'text-slate-300' : 'text-slate-700'
+                className={`block text-xs sm:text-sm font-bold mb-1.5 ${
+                  isDark ? 'text-slate-200' : 'text-slate-800'
                 }`}
               >
                 전공 (복수전공 포함)
@@ -438,8 +440,8 @@ export const ProfileEditPage: React.FC = () => {
 
             <div>
               <label
-                className={`block text-xs font-bold mb-1.5 ${
-                  isDark ? 'text-slate-300' : 'text-slate-700'
+                className={`block text-xs sm:text-sm font-bold mb-1.5 ${
+                  isDark ? 'text-slate-200' : 'text-slate-800'
                 }`}
               >
                 학점 (선택)
@@ -465,7 +467,7 @@ export const ProfileEditPage: React.FC = () => {
           <div className="flex items-center justify-between mb-4">
             <h2
               className={`text-base font-bold flex items-center gap-2 ${
-                isDark ? 'text-white' : 'text-slate-900'
+                isDark ? 'text-white' : 'text-slate-950'
               }`}
             >
               <Code2 className="w-4 h-4 text-indigo-600" />
@@ -475,7 +477,7 @@ export const ProfileEditPage: React.FC = () => {
 
           {/* Quick Add popular chips */}
           <div>
-            <p className={`text-xs font-medium mb-2 ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>
+            <p className={`text-xs font-semibold mb-2.5 ${isDark ? 'text-slate-300' : 'text-slate-700'}`}>
               클릭하여 빠른 기술 스택 추가:
             </p>
             <div className="flex flex-wrap gap-1.5">
@@ -491,14 +493,14 @@ export const ProfileEditPage: React.FC = () => {
                       !isAdded && addSkill(sk.name, sk.category as SkillCategory, '중급')
                     }
                     disabled={isAdded}
-                    className={`px-3 py-1.5 rounded-xl text-xs font-semibold transition-all ${
+                    className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all ${
                       isAdded
                         ? isDark
-                          ? 'bg-slate-800/40 text-slate-500 cursor-not-allowed border border-slate-800'
+                          ? 'bg-slate-800 text-slate-500 cursor-not-allowed border border-slate-700'
                           : 'bg-slate-100 text-slate-400 cursor-not-allowed border border-slate-200'
                         : isDark
-                        ? 'bg-slate-800 hover:bg-indigo-600/30 text-slate-300 hover:text-white border border-slate-700'
-                        : 'bg-white hover:bg-indigo-50 text-slate-700 hover:text-indigo-700 border border-slate-200 shadow-2xs'
+                        ? 'bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700'
+                        : 'bg-white hover:bg-slate-50 text-slate-800 border border-slate-300 shadow-2xs'
                     }`}
                   >
                     + {sk.name}
@@ -510,8 +512,8 @@ export const ProfileEditPage: React.FC = () => {
 
           {/* Custom skill adder */}
           <div
-            className={`p-4 rounded-2xl border flex flex-wrap items-center gap-2.5 mt-4 ${
-              isDark ? 'bg-slate-950/60 border-slate-800' : 'bg-slate-50 border-slate-200'
+            className={`p-4 rounded-xl border flex flex-wrap items-center gap-2.5 mt-4 ${
+              isDark ? 'bg-slate-950 border-slate-800' : 'bg-slate-50 border-slate-200'
             }`}
           >
             <input
@@ -525,20 +527,20 @@ export const ProfileEditPage: React.FC = () => {
                 }
               }}
               placeholder="직접 기술 스택 입력 (예: Rust, Kubernetes, PLC, Kafka 등)"
-              className={`flex-1 min-w-[200px] px-3.5 py-2 rounded-xl text-xs focus:outline-none focus:border-indigo-500 ${
+              className={`flex-1 min-w-[200px] px-3.5 py-2.5 rounded-lg text-xs sm:text-sm focus:outline-none focus:border-indigo-500 ${
                 isDark
-                  ? 'bg-slate-900 border border-slate-800 text-white placeholder-slate-600'
-                  : 'bg-white border border-slate-200 text-slate-900 placeholder-slate-400'
+                  ? 'bg-slate-900 border border-slate-700 text-white placeholder-slate-500'
+                  : 'bg-white border border-slate-300 text-slate-950 placeholder-slate-400'
               }`}
             />
 
             <select
               value={newSkillCategory}
               onChange={(e) => setNewSkillCategory(e.target.value as SkillCategory)}
-              className={`px-3 py-2 rounded-xl text-xs focus:outline-none focus:border-indigo-500 ${
+              className={`px-3 py-2.5 rounded-lg text-xs sm:text-sm focus:outline-none focus:border-indigo-500 ${
                 isDark
-                  ? 'bg-slate-900 border border-slate-800 text-slate-300'
-                  : 'bg-white border border-slate-200 text-slate-700'
+                  ? 'bg-slate-900 border border-slate-700 text-slate-200'
+                  : 'bg-white border border-slate-300 text-slate-800'
               }`}
             >
               <option value="language">프로그래밍 언어</option>
@@ -552,10 +554,10 @@ export const ProfileEditPage: React.FC = () => {
             <select
               value={newSkillLevel}
               onChange={(e) => setNewSkillLevel(e.target.value as SkillProficiency)}
-              className={`px-3 py-2 rounded-xl text-xs focus:outline-none focus:border-indigo-500 ${
+              className={`px-3 py-2.5 rounded-lg text-xs sm:text-sm focus:outline-none focus:border-indigo-500 ${
                 isDark
-                  ? 'bg-slate-900 border border-slate-800 text-slate-300'
-                  : 'bg-white border border-slate-200 text-slate-700'
+                  ? 'bg-slate-900 border border-slate-700 text-slate-200'
+                  : 'bg-white border border-slate-300 text-slate-800'
               }`}
             >
               <option value="초급">초급 (기초 문법 및 학습)</option>
@@ -566,34 +568,34 @@ export const ProfileEditPage: React.FC = () => {
             <button
               type="button"
               onClick={() => addSkill(newSkillName, newSkillCategory, newSkillLevel)}
-              className="px-4 py-2 rounded-xl text-xs font-bold bg-indigo-600 hover:bg-indigo-700 text-white flex items-center gap-1 transition-all"
+              className="px-4 py-2.5 rounded-lg text-xs sm:text-sm font-bold bg-indigo-600 hover:bg-indigo-700 text-white flex items-center gap-1 transition-all"
             >
-              <Plus className="w-3.5 h-3.5" />
+              <Plus className="w-4 h-4" />
               <span>추가</span>
             </button>
           </div>
 
           {/* Current Skills Grid */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2.5 mt-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3 mt-4">
             {formData.skills.map((skill) => (
               <div
                 key={skill.id}
-                className={`p-3.5 rounded-2xl border flex items-center justify-between gap-2 ${
+                className={`p-3.5 rounded-xl border flex items-center justify-between gap-2 ${
                   isDark
-                    ? 'bg-slate-950/80 border-slate-800'
-                    : 'bg-slate-50 border-slate-200/90 shadow-2xs'
+                    ? 'bg-slate-950 border-slate-800'
+                    : 'bg-slate-50 border-slate-200'
                 }`}
               >
                 <div>
                   <span
-                    className={`font-bold text-xs ${
-                      isDark ? 'text-white' : 'text-slate-900'
+                    className={`font-bold text-sm ${
+                      isDark ? 'text-white' : 'text-slate-950'
                     }`}
                   >
                     {skill.name}
                   </span>
                   <div className="flex items-center gap-1.5 mt-0.5">
-                    <span className="text-[10px] text-slate-400">{skill.category}</span>
+                    <span className={`text-xs ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>{skill.category}</span>
                   </div>
                 </div>
 
@@ -601,18 +603,18 @@ export const ProfileEditPage: React.FC = () => {
                   <select
                     value={skill.level}
                     onChange={(e) => updateSkillLevel(skill.id, e.target.value as SkillProficiency)}
-                    className={`text-[11px] font-bold px-2 py-1 rounded-xl border focus:outline-none ${
+                    className={`text-xs font-bold px-2 py-1 rounded-lg border focus:outline-none ${
                       skill.level === '고급'
                         ? isDark
-                          ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/30'
-                          : 'bg-emerald-50 text-emerald-700 border-emerald-200'
+                          ? 'bg-emerald-950 text-emerald-300 border-emerald-800'
+                          : 'bg-emerald-50 text-emerald-800 border-emerald-300'
                         : skill.level === '중급'
                         ? isDark
-                          ? 'bg-indigo-500/10 text-indigo-400 border-indigo-500/30'
-                          : 'bg-indigo-50 text-indigo-700 border-indigo-200'
+                          ? 'bg-indigo-950 text-indigo-300 border-indigo-800'
+                          : 'bg-indigo-50 text-indigo-800 border-indigo-300'
                         : isDark
                         ? 'bg-slate-800 text-slate-300 border-slate-700'
-                        : 'bg-slate-100 text-slate-700 border-slate-200'
+                        : 'bg-slate-100 text-slate-700 border-slate-300'
                     }`}
                   >
                     <option value="초급">초급</option>
@@ -625,7 +627,7 @@ export const ProfileEditPage: React.FC = () => {
                     onClick={() => removeSkill(skill.id)}
                     className="p-1 rounded text-slate-400 hover:text-red-500 transition-colors"
                   >
-                    <Trash2 className="w-3.5 h-3.5" />
+                    <Trash2 className="w-4 h-4" />
                   </button>
                 </div>
               </div>
@@ -639,13 +641,13 @@ export const ProfileEditPage: React.FC = () => {
             <div>
               <h2
                 className={`text-base font-bold flex items-center gap-2 ${
-                  isDark ? 'text-white' : 'text-slate-900'
+                  isDark ? 'text-white' : 'text-slate-950'
                 }`}
               >
                 <FolderGit2 className="w-4 h-4 text-indigo-600" />
                 <span>프로젝트 경험 ({formData.projects.length}개)</span>
               </h2>
-              <p className={`text-xs mt-0.5 ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>
+              <p className={`text-xs sm:text-sm mt-0.5 ${isDark ? 'text-slate-300' : 'text-slate-600'}`}>
                 프로젝트에서 담당한 역할과 수치 기반 성과를 구체적으로 작성하면 AI 적합도 점수가 정밀하게 산출됩니다.
               </p>
             </div>
@@ -653,10 +655,10 @@ export const ProfileEditPage: React.FC = () => {
             <button
               type="button"
               onClick={addProject}
-              className={`px-3 py-1.5 rounded-xl text-xs font-bold border flex items-center gap-1 transition-all ${
+              className={`px-3 py-1.5 rounded-lg text-xs font-bold border flex items-center gap-1 transition-all ${
                 isDark
-                  ? 'bg-indigo-600/20 text-indigo-300 hover:bg-indigo-600 hover:text-white border-indigo-500/30'
-                  : 'bg-indigo-50 text-indigo-700 hover:bg-indigo-600 hover:text-white border-indigo-200'
+                  ? 'bg-indigo-950 text-indigo-300 hover:bg-indigo-900 border-indigo-800'
+                  : 'bg-indigo-50 text-indigo-800 hover:bg-indigo-100 border-indigo-200'
               }`}
             >
               <Plus className="w-3.5 h-3.5" />
@@ -668,18 +670,18 @@ export const ProfileEditPage: React.FC = () => {
             {formData.projects.map((proj, pIdx) => (
               <div
                 key={proj.id}
-                className={`p-5 rounded-2xl border space-y-3 relative ${
-                  isDark ? 'bg-slate-950/70 border-slate-800' : 'bg-slate-50 border-slate-200'
+                className={`p-5 rounded-xl border space-y-3.5 ${
+                  isDark ? 'bg-slate-950 border-slate-800' : 'bg-slate-50 border-slate-200'
                 }`}
               >
                 <div className="flex items-center justify-between">
-                  <span className="text-xs font-bold text-indigo-600 uppercase tracking-wider">
+                  <span className="text-xs font-bold text-indigo-600 dark:text-indigo-400 uppercase tracking-wider">
                     프로젝트 #{pIdx + 1}
                   </span>
                   <button
                     type="button"
                     onClick={() => removeProject(proj.id)}
-                    className="text-xs text-slate-400 hover:text-red-500 flex items-center gap-1 transition-colors font-medium"
+                    className="text-xs text-slate-400 hover:text-red-500 flex items-center gap-1 transition-colors font-semibold"
                   >
                     <Trash2 className="w-3.5 h-3.5" />
                     <span>삭제</span>
@@ -688,7 +690,7 @@ export const ProfileEditPage: React.FC = () => {
 
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
                   <div className="md:col-span-2">
-                    <label className={`block text-[11px] font-bold mb-1 ${isDark ? 'text-slate-400' : 'text-slate-600'}`}>
+                    <label className={`block text-xs font-bold mb-1 ${isDark ? 'text-slate-200' : 'text-slate-800'}`}>
                       프로젝트명
                     </label>
                     <input
@@ -704,7 +706,7 @@ export const ProfileEditPage: React.FC = () => {
                     />
                   </div>
                   <div>
-                    <label className={`block text-[11px] font-bold mb-1 ${isDark ? 'text-slate-400' : 'text-slate-600'}`}>
+                    <label className={`block text-xs font-bold mb-1 ${isDark ? 'text-slate-200' : 'text-slate-800'}`}>
                       진행 기간
                     </label>
                     <input
@@ -723,7 +725,7 @@ export const ProfileEditPage: React.FC = () => {
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                   <div>
-                    <label className={`block text-[11px] font-bold mb-1 ${isDark ? 'text-slate-400' : 'text-slate-600'}`}>
+                    <label className={`block text-xs font-bold mb-1 ${isDark ? 'text-slate-200' : 'text-slate-800'}`}>
                       담당 역할 및 기여도
                     </label>
                     <input
@@ -739,7 +741,7 @@ export const ProfileEditPage: React.FC = () => {
                     />
                   </div>
                   <div>
-                    <label className={`block text-[11px] font-bold mb-1 ${isDark ? 'text-slate-400' : 'text-slate-600'}`}>
+                    <label className={`block text-xs font-bold mb-1 ${isDark ? 'text-slate-200' : 'text-slate-800'}`}>
                       사용 기술 스택 (쉼표로 구분)
                     </label>
                     <input
@@ -760,7 +762,7 @@ export const ProfileEditPage: React.FC = () => {
                 </div>
 
                 <div>
-                  <label className={`block text-[11px] font-bold mb-1 ${isDark ? 'text-slate-400' : 'text-slate-600'}`}>
+                  <label className={`block text-xs font-bold mb-1 ${isDark ? 'text-slate-200' : 'text-slate-800'}`}>
                     프로젝트 설명
                   </label>
                   <textarea
@@ -777,7 +779,7 @@ export const ProfileEditPage: React.FC = () => {
                 </div>
 
                 <div>
-                  <label className={`block text-[11px] font-bold mb-1 ${isDark ? 'text-slate-400' : 'text-slate-600'}`}>
+                  <label className={`block text-xs font-bold mb-1 ${isDark ? 'text-slate-200' : 'text-slate-800'}`}>
                     핵심 구현 성과 (줄바꿈으로 구분)
                   </label>
                   <textarea
@@ -805,7 +807,7 @@ export const ProfileEditPage: React.FC = () => {
           <div className="flex items-center justify-between mb-4">
             <h2
               className={`text-base font-bold flex items-center gap-2 ${
-                isDark ? 'text-white' : 'text-slate-900'
+                isDark ? 'text-white' : 'text-slate-950'
               }`}
             >
               <Briefcase className="w-4 h-4 text-indigo-600" />
@@ -815,10 +817,10 @@ export const ProfileEditPage: React.FC = () => {
             <button
               type="button"
               onClick={addCareer}
-              className={`px-3 py-1.5 rounded-xl text-xs font-bold border flex items-center gap-1 transition-all ${
+              className={`px-3 py-1.5 rounded-lg text-xs font-bold border flex items-center gap-1 transition-all ${
                 isDark
-                  ? 'bg-indigo-600/20 text-indigo-300 hover:bg-indigo-600 hover:text-white border-indigo-500/30'
-                  : 'bg-indigo-50 text-indigo-700 hover:bg-indigo-600 hover:text-white border-indigo-200'
+                  ? 'bg-indigo-950 text-indigo-300 hover:bg-indigo-900 border-indigo-800'
+                  : 'bg-indigo-50 text-indigo-800 hover:bg-indigo-100 border-indigo-200'
               }`}
             >
               <Plus className="w-3.5 h-3.5" />
@@ -830,13 +832,13 @@ export const ProfileEditPage: React.FC = () => {
             {formData.careers.map((career, cIdx) => (
               <div
                 key={career.id}
-                className={`p-4 rounded-2xl border space-y-3 ${
-                  isDark ? 'bg-slate-950/70 border-slate-800' : 'bg-slate-50 border-slate-200'
+                className={`p-4 rounded-xl border space-y-3 ${
+                  isDark ? 'bg-slate-950 border-slate-800' : 'bg-slate-50 border-slate-200'
                 }`}
               >
                 <div className="grid grid-cols-1 md:grid-cols-4 gap-3">
                   <div>
-                    <label className={`block text-[11px] font-bold mb-1 ${isDark ? 'text-slate-400' : 'text-slate-600'}`}>
+                    <label className={`block text-xs font-bold mb-1 ${isDark ? 'text-slate-200' : 'text-slate-800'}`}>
                       회사명
                     </label>
                     <input
@@ -852,7 +854,7 @@ export const ProfileEditPage: React.FC = () => {
                     />
                   </div>
                   <div>
-                    <label className={`block text-[11px] font-bold mb-1 ${isDark ? 'text-slate-400' : 'text-slate-600'}`}>
+                    <label className={`block text-xs font-bold mb-1 ${isDark ? 'text-slate-200' : 'text-slate-800'}`}>
                       담당 직무
                     </label>
                     <input
@@ -868,7 +870,7 @@ export const ProfileEditPage: React.FC = () => {
                     />
                   </div>
                   <div>
-                    <label className={`block text-[11px] font-bold mb-1 ${isDark ? 'text-slate-400' : 'text-slate-600'}`}>
+                    <label className={`block text-xs font-bold mb-1 ${isDark ? 'text-slate-200' : 'text-slate-800'}`}>
                       근무 형태
                     </label>
                     <select
@@ -887,7 +889,7 @@ export const ProfileEditPage: React.FC = () => {
                     </select>
                   </div>
                   <div>
-                    <label className={`block text-[11px] font-bold mb-1 ${isDark ? 'text-slate-400' : 'text-slate-600'}`}>
+                    <label className={`block text-xs font-bold mb-1 ${isDark ? 'text-slate-200' : 'text-slate-800'}`}>
                       기간
                     </label>
                     <input
@@ -906,13 +908,13 @@ export const ProfileEditPage: React.FC = () => {
 
                 <div>
                   <div className="flex items-center justify-between mb-1">
-                    <label className={`text-[11px] font-bold ${isDark ? 'text-slate-400' : 'text-slate-600'}`}>
+                    <label className={`text-xs font-bold ${isDark ? 'text-slate-200' : 'text-slate-800'}`}>
                       주요 업무 및 성과
                     </label>
                     <button
                       type="button"
                       onClick={() => removeCareer(career.id)}
-                      className="text-xs text-red-500 hover:underline font-bold"
+                      className="text-xs text-rose-600 hover:underline font-bold"
                     >
                       삭제
                     </button>
@@ -939,7 +941,7 @@ export const ProfileEditPage: React.FC = () => {
           <div className="flex items-center justify-between mb-4">
             <h2
               className={`text-base font-bold flex items-center gap-2 ${
-                isDark ? 'text-white' : 'text-slate-900'
+                isDark ? 'text-white' : 'text-slate-950'
               }`}
             >
               <Award className="w-4 h-4 text-indigo-600" />
@@ -949,10 +951,10 @@ export const ProfileEditPage: React.FC = () => {
             <button
               type="button"
               onClick={addCertificate}
-              className={`px-3 py-1.5 rounded-xl text-xs font-bold border flex items-center gap-1 transition-all ${
+              className={`px-3 py-1.5 rounded-lg text-xs font-bold border flex items-center gap-1 transition-all ${
                 isDark
-                  ? 'bg-indigo-600/20 text-indigo-300 hover:bg-indigo-600 hover:text-white border-indigo-500/30'
-                  : 'bg-indigo-50 text-indigo-700 hover:bg-indigo-600 hover:text-white border-indigo-200'
+                  ? 'bg-indigo-950 text-indigo-300 hover:bg-indigo-900 border-indigo-800'
+                  : 'bg-indigo-50 text-indigo-800 hover:bg-indigo-100 border-indigo-200'
               }`}
             >
               <Plus className="w-3.5 h-3.5" />
@@ -964,11 +966,11 @@ export const ProfileEditPage: React.FC = () => {
             {formData.certificates.map((cert, cIdx) => (
               <div
                 key={cert.id}
-                className={`p-3.5 rounded-2xl border flex items-center justify-between gap-2 ${
-                  isDark ? 'bg-slate-950/70 border-slate-800' : 'bg-slate-50 border-slate-200'
+                className={`p-4 rounded-xl border flex items-center justify-between gap-2 ${
+                  isDark ? 'bg-slate-950 border-slate-800' : 'bg-slate-50 border-slate-200'
                 }`}
               >
-                <div className="flex-1 space-y-1">
+                <div className="flex-1 space-y-1.5">
                   <input
                     type="text"
                     value={cert.name}
@@ -1011,7 +1013,7 @@ export const ProfileEditPage: React.FC = () => {
                   onClick={() => removeCertificate(cert.id)}
                   className="p-1.5 rounded text-slate-400 hover:text-red-500"
                 >
-                  <Trash2 className="w-3.5 h-3.5" />
+                  <Trash2 className="w-4 h-4" />
                 </button>
               </div>
             ))}
@@ -1022,19 +1024,19 @@ export const ProfileEditPage: React.FC = () => {
         <section className={sectionClass}>
           <h2
             className={`text-base font-bold flex items-center gap-2 mb-2 ${
-              isDark ? 'text-white' : 'text-slate-900'
+              isDark ? 'text-white' : 'text-slate-950'
             }`}
           >
             <FileText className="w-4 h-4 text-indigo-600" />
             <span>자기소개 및 직무 역량 요약 (자유 서술)</span>
           </h2>
-          <p className={`text-xs mb-3 ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>
+          <p className={`text-xs sm:text-sm mb-3 ${isDark ? 'text-slate-300' : 'text-slate-600'}`}>
             자신의 문제 해결 태도, 관심 도메인, 개발 철학 또는 포트폴리오 요약을 자유롭게 적어주세요.
             AI가 채용 공고의 인재상 및 우대 사항과 교차 검증합니다.
           </p>
 
           <textarea
-            rows={4}
+            rows={5}
             value={formData.freeIntro}
             onChange={(e) => setFormData({ ...formData, freeIntro: e.target.value })}
             placeholder="자신의 핵심 역량과 지원 동기, 강점을 자유롭게 작성해주세요."
@@ -1045,19 +1047,19 @@ export const ProfileEditPage: React.FC = () => {
 
       {/* Bottom Floating Save bar */}
       <div
-        className={`sticky bottom-4 z-20 p-4 rounded-3xl border shadow-2xl flex items-center justify-between backdrop-blur-md ${
+        className={`sticky bottom-4 z-20 p-4 rounded-2xl border shadow-lg flex items-center justify-between backdrop-blur-md ${
           isDark
-            ? 'border-slate-700 bg-slate-900/95'
-            : 'border-slate-200/90 bg-white/95 text-slate-800'
+            ? 'border-slate-800 bg-slate-950/95'
+            : 'border-slate-300 bg-white/95 text-slate-900 shadow-sm'
         }`}
       >
-        <div className={`text-xs hidden sm:block ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>
+        <div className={`text-xs hidden sm:block ${isDark ? 'text-slate-400' : 'text-slate-600'}`}>
           스펙을 저장하면 다음 분석부터 자동으로 반영됩니다.
         </div>
         <div className="flex items-center gap-3 w-full sm:w-auto justify-end">
           <button
             onClick={handleSave}
-            className="px-5 py-2.5 rounded-2xl text-xs md:text-sm font-bold bg-indigo-600 hover:bg-indigo-700 text-white flex items-center gap-2 transition-all shadow-md shadow-indigo-600/25"
+            className="px-5 py-2.5 rounded-xl text-xs sm:text-sm font-bold bg-indigo-600 hover:bg-indigo-700 text-white flex items-center gap-2 transition-all shadow-sm"
           >
             <Save className="w-4 h-4" />
             <span>스펙 저장 완료</span>
@@ -1067,7 +1069,7 @@ export const ProfileEditPage: React.FC = () => {
               handleSave();
               setActivePage('job-input');
             }}
-            className="px-5 py-2.5 rounded-2xl text-xs md:text-sm font-bold bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white flex items-center gap-2 transition-all shadow-md shadow-purple-600/25"
+            className="px-5 py-2.5 rounded-xl text-xs sm:text-sm font-bold bg-slate-900 dark:bg-slate-800 hover:bg-slate-800 text-white flex items-center gap-2 transition-all shadow-sm border border-slate-700"
           >
             <span>채용 공고 분석으로 이동</span>
             <ArrowRight className="w-4 h-4" />
